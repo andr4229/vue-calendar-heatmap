@@ -47,7 +47,7 @@
         )
           rect.vch__day__square(
             v-for="(day, dayIndex) in week",
-            v-if="day.date < now"
+            v-if="day.date"
             :key="dayIndex",
             :transform="getDayPosition(dayIndex)"
             :width="SQUARE_SIZE - SQUARE_BORDER_SIZE",
