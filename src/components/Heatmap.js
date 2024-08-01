@@ -1,12 +1,13 @@
 import { DAYS_IN_ONE_YEAR, DAYS_IN_WEEK } from './consts'
 
 export default class CalendarHeatmap {
-  constructor (endDate, values, max, colorsAmount) {
+  constructor (endDate, values, max, colorsAmount, colorSteps) {
     this.endDate = this._parseDate(endDate)
     this.max = max || Math.ceil((Math.max(...values.map(day => day.count)) / 5) * 4)
     this.startDate = this._shiftDate(endDate, -DAYS_IN_ONE_YEAR)
     this.values = values
     this.colorsAmount = colorsAmount
+    this.steps = colorSteps
   }
 
   get activities () {
@@ -55,17 +56,46 @@ export default class CalendarHeatmap {
   }
 
   getColorIndex (value) {
-    if (value == null || value === undefined) {
-      return 0
-    } else if (value <= 0) {
-      return 1
-    } else if (value >= this.max) {
-      return this.colorsAmount - 1
+    // If steps are defined
+    if (this.steps) {
+      for (let i = 0; i < this.steps.length; i++) {
+        const step = this.steps[i]
+        const from = step.from
+        const to = step.to
+        if (from == null && to == null) {
+          if (value == null) {
+            return i
+          }
+        } else if (from == null) {
+          if (value <= to) {
+            return i
+          }
+        } else if (to == null) {
+          if (value > from) {
+            return i
+          }
+        } else {
+          if (value > from && value <= to) {
+            return i
+          }
+        }
+      }
+     //
+     //
+     //
     } else {
-      // minus 3 to exclude null, 0 and over max.
-      const count = this.colorsAmount - 3
-      const decimal = value / this.max
-      return Math.ceil(decimal * count) + 1
+      if (value == null || value === undefined) {
+        return 0
+      } else if (value <= 0) {
+        return 1
+      } else if (value >= this.max) {
+        return this.colorsAmount - 1
+      } else {
+        // minus 3 to exclude null, 0 and over max.
+        const count = this.colorsAmount - 3
+        const decimal = value / this.max
+        return Math.ceil(decimal * count) + 1
+      }
     }
   }
 

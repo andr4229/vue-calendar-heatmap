@@ -111,6 +111,10 @@ export default {
     noDataText: {
       type: String,
       default: null
+    },
+    colorSteps: {
+      type: Array,
+      default: null
     }
   },
 
@@ -128,7 +132,7 @@ export default {
       return `translate(${this.tooltipX}, ${this.tooltipY})`
     },
     heatmap () {
-      return new Heatmap(this.endDate, this.values, this.max, this.rangeColor.length)
+      return new Heatmap(this.endDate, this.values, this.max, this.rangeColor.length, this.colorSteps)
     },
     width () {
       return {
