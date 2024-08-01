@@ -21,7 +21,7 @@
           :y="vertical ? SQUARE_SIZE - SQUARE_BORDER_SIZE : 69"
         ) {{ lo.days[5] }}
 
-      g.vch__legend__wrapper(:transform="legendWrapperTransform[position]")
+      g.vch__legend__wrapper(:transform="legendWrapperTransform[position]" v-tooltip="tooltipLegend()")
         text(
           :x="vertical ? SQUARE_SIZE * 1.25 : -25"
           :y="vertical ? 8 : SQUARE_SIZE + 1"
@@ -38,7 +38,7 @@
         text(
           :x="vertical ? SQUARE_SIZE * 1.25 : SQUARE_SIZE * rangeColor.length + 1",
           :y="vertical ? SQUARE_SIZE * (rangeColor.length + 2) - SQUARE_BORDER_SIZE : SQUARE_SIZE + 1"
-          ) {{ lo.more }}
+          ) {{ this.max + "+" }}
       g.vch__year__wrapper(:transform="yearWrapperTransform")
         g.vch__month__wrapper(
           v-for="(week, weekIndex) in heatmap.calendar",
@@ -61,7 +61,7 @@
 <script>
 import { VTooltip } from 'v-tooltip'
 import Heatmap from './Heatmap'
-import { DAYS_IN_WEEK, DEFAULT_LOCALE, DEFAULT_RANGE_COLOR, DEFAULT_TOOLTIP_UNIT, SQUARE_SIZE } from './consts.js'
+import { DAYS_IN_WEEK, DEFAULT_COLOR_LEGEND, DEFAULT_LOCALE, DEFAULT_RANGE_COLOR, DEFAULT_TOOLTIP_UNIT, SQUARE_SIZE } from './consts.js'
 
 VTooltip.enabled = window.innerWidth > 768
 
@@ -80,6 +80,10 @@ export default {
     rangeColor: {
       type: Array,
       default: () => DEFAULT_RANGE_COLOR
+    },
+    colorLegend: {
+      type: Array,
+      default: () => DEFAULT_COLOR_LEGEND
     },
     values: {
       required: true,
@@ -197,6 +201,26 @@ export default {
       }
       return false
     },
+    tooltipLegend() {
+      if (this.tooltip) {
+        const title = "<h1>Legends</h1>"
+        let text = ""
+        for (let index = 0; index < this.rangeColor.length; index++) {
+          const color = this.rangeColor[index];
+          const colorText = this.colorLegend[index]
+          text += `<p><div style="height: 20px; width:20px; background-color: ${color}; display: inline-block"></div><span> ${colorText}</span></p>`
+        }
+          return {
+            content: `${title}${text}`,
+            delay: { show: 150, hide: 50 }
+          }
+        } else if (this.noDataText) {
+          return {
+            content: `${this.noDataText}`,
+            delay: { show: 150, hide: 50 }
+          }
+        }
+      },
     getWeekPosition (index) {
       if (this.vertical) {
         return `translate(0, ${(this.SQUARE_SIZE * this.heatmap.weekCount) - ((index + 1) * this.SQUARE_SIZE)})`
