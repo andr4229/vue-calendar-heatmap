@@ -77,6 +77,10 @@ export default {
     max: {
       type: Number
     },
+    /** First color is alwayss used for null values.
+     *
+     * Second color is always used for 0 and below.
+    **/
     rangeColor: {
       type: Array,
       default: () => DEFAULT_RANGE_COLOR
@@ -124,7 +128,7 @@ export default {
       return `translate(${this.tooltipX}, ${this.tooltipY})`
     },
     heatmap () {
-      return new Heatmap(this.endDate, this.values, this.max)
+      return new Heatmap(this.endDate, this.values, this.max, this.rangeColor.length)
     },
     width () {
       return {
