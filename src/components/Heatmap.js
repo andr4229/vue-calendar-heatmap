@@ -71,7 +71,7 @@ export default class CalendarHeatmap {
             return i
           }
         } else if (to == null) {
-          if (value > from) {
+          if (value >= from) {
             return i
           }
         } else {
